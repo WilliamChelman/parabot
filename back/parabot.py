@@ -2,11 +2,9 @@
 # encoding: utf-8
 """
 Parabot.
-
 Usage:
   parabot.py <config> [-u]
   parabot.py -h  | --help
-
 Options:
   -u           No time limit between votes.
   -h --help    Show this screen.
@@ -16,10 +14,6 @@ import configparser
 import json
 import logging
 import sys
-<<<<<<< HEAD
-import threading
-from datetime import datetime, timedelta
-
 from datetime import datetime, timedelta
 
 from docopt import docopt
@@ -152,13 +146,6 @@ class VBot(SingleServerIRCBot):
         # nickname!username@nickname.tmi.twitch.tv
         return user_id.split('!', 1)[0]
 
-def main():
-    if len(sys.argv) < 2:
-        exit("Usage: parabot.py <configuration_file>")
-    config = configparser.ConfigParser()
-    config.read(sys.argv[1])
-    db_file = config["DATABASE"]["file"]
-    create_connection(db_file)
 
 def main():
     args = docopt(__doc__, version='ParaBot 1.0')
