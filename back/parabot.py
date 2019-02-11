@@ -1,13 +1,28 @@
 #!/usr/bin/env python
 # encoding: utf-8
+"""
+Parabot.
+
+Usage:
+  parabot.py <config> [-u]
+  parabot.py -h  | --help
+
+Options:
+  -u           No time limit between votes.
+  -h --help    Show this screen.
+"""
 
 import configparser
 import json
 import logging
 import sys
+<<<<<<< HEAD
 import threading
 from datetime import datetime, timedelta
 
+from datetime import datetime, timedelta
+
+from docopt import docopt
 from irc.bot import SingleServerIRCBot
 
 
@@ -35,8 +50,12 @@ logger = _get_logger()
 class VBot(SingleServerIRCBot):
     VERSION = '1.0.0'
 
-    def __init__(self, host, port, nickname, password, channel):
-        logger.debug('VBot.__init__ (VERSION = %r)', self.VERSION)
+    def __init__(self, host, port, nickname, password, channel, unlimited):
+        logger.debug(
+            'VBot.__init__ (VERSION = %r, unlimited = %s)',
+            self.VERSION,
+            unlimited
+        )
         SingleServerIRCBot.__init__(
             self,
             [(host, port, password)],
@@ -44,6 +63,7 @@ class VBot(SingleServerIRCBot):
             nickname
         )
         self.channel = channel
+        self.unlimited = unlimited
         self.viewers = []
         self.voters = {}
         self.votes = {
@@ -117,7 +137,7 @@ class VBot(SingleServerIRCBot):
             message = "Shepard est maintenant {} !".format(self.alignment)
             self.connection.privmsg(self.channel, message)
         data = {
-            summary: {
+            "summary": {
                 "renegade_perc": self.renegade_perc,
                 "renegade": renegade,
                 "paragon": paragon,
@@ -139,12 +159,18 @@ def main():
     config.read(sys.argv[1])
     db_file = config["DATABASE"]["file"]
     create_connection(db_file)
+
+def main():
+    args = docopt(__doc__, version='ParaBot 1.0')
+    config = configparser.ConfigParser()
+    unlimited = args["-u"]
+    config.read(args["<config>"])
     host = config["BOT"]["host"]
     port = int(config["BOT"]["port"])
     username = config["BOT"]["username"]
     password = config["BOT"]["password"]
     channel = config["BOT"]["channel"]
-    bot = VBot(host, port, username, password, channel)
+    bot = VBot(host, port, username, password, channel, unlimited)
     bot.start()
 
 
