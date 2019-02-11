@@ -1,5 +1,0 @@
-name: parabot
-dependencies:
-  - flask
-  - docopt
-  - irc
