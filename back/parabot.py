@@ -11,7 +11,6 @@ Options:
 """
 
 import configparser
-import json
 import logging
 import sys
 from datetime import datetime, timedelta
@@ -59,13 +58,7 @@ class VBot(SingleServerIRCBot):
         self.channel = channel
         self.unlimited = unlimited
         self.viewers = []
-        self.voters = {}
-        self.votes = {
-            "paragon": 0,
-            "renegade": 0
-        }
-        self.renegade_perc = 0.5
-        self.alignment = "neutral"
+        self.reset_votes()
 
     def on_welcome(self, connection, event):
         logger.debug('VBot.on_welcome')
@@ -130,16 +123,26 @@ class VBot(SingleServerIRCBot):
         if prev_alignment != self.alignment:
             message = "Shepard est maintenant {} !".format(self.alignment)
             self.connection.privmsg(self.channel, message)
+
+    def get_summary(self):
         data = {
             "summary": {
                 "renegade_perc": self.renegade_perc,
-                "renegade": renegade,
-                "paragon": paragon,
+                "renegade": self.votes["renegade"],
+                "paragon": self.votes["paragon"],
                 "alignment": self.alignment
             }
         }
-        with open("summary.tmp", "w") as f:
-            f.write(json.dumps(data))
+        return data
+
+    def reset_votes(self):
+        self.voters = {}
+        self.votes = {
+            "paragon": 0,
+            "renegade": 0
+        }
+        self.renegade_perc = 0.5
+        self.alignment = "neutral"
 
     @staticmethod
     def _parse_nickname(user_id):
@@ -152,11 +155,11 @@ def main():
     config = configparser.ConfigParser()
     unlimited = args["-u"]
     config.read(args["<config>"])
-    host = config["BOT"]["host"]
-    port = int(config["BOT"]["port"])
-    username = config["BOT"]["username"]
-    password = config["BOT"]["password"]
-    channel = config["BOT"]["channel"]
+    host = config["HOST"]
+    port = int(config["PORT"])
+    username = config["USERNAME"]
+    password = config["PASSWORD"]
+    channel = config["CHANNEL"]
     bot = VBot(host, port, username, password, channel, unlimited)
     bot.start()
 

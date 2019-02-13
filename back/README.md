@@ -1,8 +1,8 @@
-Do stuff like :
-conda create -n parabot python=3
-conda activate parabot
-conda install flask
-conda install docopt
-pip install irc
+Install env:
+conda env create -f environment.yml
 
+Activate env:
+source activate parabot
+
+Run app:
 FLASK_APP=api.py flask run

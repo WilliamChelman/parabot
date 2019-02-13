@@ -1,0 +1,11 @@
+name: parabot
+channels:
+  - defaults
+dependencies:
+  - docopt
+  - flask
+  - python=3.7
+  - pip:
+    - irc
+prefix: /home/loic/anaconda3/envs/twitch
+
