@@ -1,8 +1,18 @@
-Install env:
-conda env create -f environment.yml
+Install:
+	python setup.py install
 
-Activate env:
-source activate parabot
+Create config file:
+	HOST = "irc.twitch.tv"
+	PORT = 6667
+	USERNAME = USERNAME
+	PASSWORD = PASSWORD
+	CHANNEL = CHANNEL
+	UNLIMITED = False
 
-Run app:
-FLASK_APP=api.py flask run
+Run:
+	parabot <config>
+
+API routes:
+	/run_parabot : run parabot and/or connect to channel
+	/stop_parabot : disconnect parabot from channel
+	/summary : get current status as json data

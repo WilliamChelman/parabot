@@ -1,20 +1,28 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from parabot import VBot
+from threading import Thread
 
 from flask import Flask, jsonify
 
+from parabot.ircbot import VBot
+
 app = Flask(__name__)
-app.config.from_pyfile('config.ini')
-unlimited = app.config["UNLIMITED"]
-host = app.config["HOST"]
-port = app.config["PORT"]
-username = app.config["USERNAME"]
-password = app.config["PASSWORD"]
-channel = app.config["CHANNEL"]
-PARABOT = VBot(host, port, username, password, channel, unlimited)
+PARABOT = None
 RUNNING_PARABOT = False
+
+
+def start_parabot():
+    global PARABOT
+    if PARABOT is None:
+        unlimited = app.config["UNLIMITED"]
+        host = app.config["HOST"]
+        port = app.config["PORT"]
+        username = app.config["USERNAME"]
+        password = app.config["PASSWORD"]
+        channel = app.config["CHANNEL"]
+        PARABOT = VBot(host, port, username, password, channel, unlimited)
+    PARABOT.start()
 
 
 @app.route("/")
@@ -27,8 +35,10 @@ def run_parabot():
     global RUNNING_PARABOT
     global PARABOT
     if not RUNNING_PARABOT:
+        t = Thread(target=start_parabot)
+        t.start()
         RUNNING_PARABOT = True
-        PARABOT.start()
+        return("Parabot running.")
     else:
         return("Parabot already running.")
 

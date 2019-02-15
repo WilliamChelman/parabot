@@ -1,21 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-Parabot.
-Usage:
-  parabot.py <config> [-u]
-  parabot.py -h  | --help
-Options:
-  -u           No time limit between votes.
-  -h --help    Show this screen.
-"""
 
-import configparser
 import logging
 import sys
 from datetime import datetime, timedelta
 
-from docopt import docopt
 from irc.bot import SingleServerIRCBot
 
 
@@ -41,12 +30,10 @@ logger = _get_logger()
 
 
 class VBot(SingleServerIRCBot):
-    VERSION = '1.0.0'
 
     def __init__(self, host, port, nickname, password, channel, unlimited):
         logger.debug(
-            'VBot.__init__ (VERSION = %r, unlimited = %s)',
-            self.VERSION,
+            'VBot.__init__ (unlimited = %s)',
             unlimited
         )
         SingleServerIRCBot.__init__(
@@ -148,21 +135,3 @@ class VBot(SingleServerIRCBot):
     def _parse_nickname(user_id):
         # nickname!username@nickname.tmi.twitch.tv
         return user_id.split('!', 1)[0]
-
-
-def main():
-    args = docopt(__doc__, version='ParaBot 1.0')
-    config = configparser.ConfigParser()
-    unlimited = args["-u"]
-    config.read(args["<config>"])
-    host = config["HOST"]
-    port = int(config["PORT"])
-    username = config["USERNAME"]
-    password = config["PASSWORD"]
-    channel = config["CHANNEL"]
-    bot = VBot(host, port, username, password, channel, unlimited)
-    bot.start()
-
-
-if __name__ == '__main__':
-    main()
